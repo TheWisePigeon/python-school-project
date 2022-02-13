@@ -1,42 +1,76 @@
-from os import name
+import os
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 import credentials as cre
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{cre.user}:{cre.password}@localhost:5432/flask"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{cre.user}:{cre.password}@localhost:5432/flask"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+#defining models
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer, primary_key=True)
+    label = db.Column(db.String, unique=False, nullable=False)
+    books = db.relationship('Book', backref='book', lazy=True)
 
-# class Person(db.Model):
-#     __tablename__ = 'test'
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(), nullable=False)
+    def __init__(self, id, label):
+        self.id = id
+        self.label = label
 
-#     def __init__(self, nom):
-#         self.name = name
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+        
+    def format(self):
+        return {
+            'id' : self.id,
+            'label' : self.label
+        }
 
-#     def insert(self):
-#         db.session.add(self)
-#         db.session.commit()
-    
-#     def update(self):
-#         db.session.commit()
+    def updateLabel(self):
+        db.session.commit()
 
-#     def delete(self):
-#         db.session.delete(self)
-#         db.session.commit()
+class Book(db.Model):
+    __tablename__ = 'books'
+    id = db.Column(db.Integer, primary_key=True)
+    isbn = db.Column(db.String, unique=True, nullable=False)
+    title = db.Column(db.String, nullable=False)
+    pub_date = db.Column(db.Date, nullable=False)
+    author = db.Column(db.String, nullable=False)
+    editor = db.Column(db.String, nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
 
-#     def format(self):
-#         return {
-#             "id": self.id,
-#             "name" : self.name
-#         }
+    def __init__(self, id, isbn, title, pub_date, author, editor, category_id):
+        self.id = id
+        self.isbn = isbn
+        self.title = title
+        self.pub_date = pub_date
+        self.author = author
+        self.editor = editor
+        self.category_id = category_id
 
-# db.create_all()
+    def update(self):
+        db.session.commit()
 
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
+    def format(self):
+        return  {
+            'id': self.id,
+            'isbn' : self.isbn,
+            'title' : self.title,
+            'pub_date' : self.pub_date,
+            'author' : self.author,
+            'editor' : self.editor,
+            'category_id' : self.category_id
+        }
+
+db.create_all()
 # @app.route('/etudiants', methods=['GET'])
 # def get_all_students():
 #     etudiants = Person.query.all()
@@ -61,27 +95,4 @@ db = SQLAlchemy(app)
 
 
 
-
-
-# @app.route('/')
-# def index():
-#     personnes = Person.query.all()
-#     return render_template('index.html', data=personnes)
-
-# @app.route('/create', methods=['GET'])
-# def form():
-#     return render_template('create.html')
     
-
-# @app.route('/add', methods=['POST'])
-# def add():
-#     try:
-#         nom = request.form.get('username')
-#         person = Person(name=nom)
-#         db.session.add(person)
-#         db.session.commit()
-#         return redirect(url_for('index'))
-#     except:
-#         db.session.rollback()
-#     finally:
-#         db.session.close()
