@@ -157,7 +157,7 @@ def getBooksFromCat(id):
         return jsonify({
             "Success" : True,
             "books" : books,
-            "category label" : (Category.query.get(id)).format()["label"],
+            "label" : (Category.query.get(id)).format()["label"],
             "total" : len(books)
         })
 
@@ -215,7 +215,7 @@ def deleteCategory(id):
         })
 
 ##update a book's infos
-@app.route('/books/<int:id>', methods=['PATCH'])
+@app.route('/books/<int:id>', methods=['PATCH', 'PUT'])
 def updateBook(id):
     body=request.args
     book = Book.query.get(id)
@@ -231,7 +231,7 @@ def updateBook(id):
     })
 
 ##update a category
-@app.route('/categories/<int:id>', methods=['PUT'])
+@app.route('/categories/<int:id>', methods=['PATCH', 'PUT'])
 def updateCategory(id):
     body=request.args
     print(body)
@@ -260,6 +260,17 @@ def badRequest(error):
         "Message" : "The server couldn't respond because you made a bad request!"
     }),400
     )
+
+@app.errorhandler(405)
+def badRequest(error):
+    return make_response(
+        jsonify({
+        "Success" : False,
+        "Error" : 405,
+        "Message" : "Method not allowed on this route!"
+    }),400
+    )
+
 
 @app.errorhandler(404)
 def notFound(error):
