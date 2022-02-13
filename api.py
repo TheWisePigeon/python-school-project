@@ -88,7 +88,7 @@ class Book(db.Model):
 #test route
 @app.route('/', methods=['GET'])
 def index():
-    return redirect("https://github.com/TheWisePigeon")
+    return redirect("https://github.com/TheWisePigeon/python-school-project#readme")
 
 
 #insert a book
