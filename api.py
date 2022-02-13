@@ -165,7 +165,7 @@ def getBooksFromCat(id):
 
 
 ##get a category by its id
-@app.route('/category/<int:id>', methods=['GET'])
+@app.route('/categories/<int:id>', methods=['GET'])
 def getCategory(id):
     category = (Category.query.get(id)).format()
     if category is None:
