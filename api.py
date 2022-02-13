@@ -101,17 +101,15 @@ def getBook(id):
 ##get all books from a category
 @app.route('/getBooksFromCat/<int:id>', methods=['GET'])
 def getBooksFromCat(id):
-    books = (book.format() for book in Book.query.filter(Book.category_id==id))
+    books = [book.format() for book in Book.query.filter_by(category_id=id)]
     if books is None:
         abort(404)
     else :
-        return make_response(
-            jsonify({
-                "Success" : True,
-                "books" : books,
-                "Category label" : (Category.query.get(id)).format() 
-            })
-        )
+        return jsonify({
+            "Success" : True,
+            "books" : books,
+            "category label" : (Category.query.get(id)).format()["label"]
+        })
 # @app.route('/etudiants', methods=['GET'])
 # def get_all_students():
 #     etudiants = Person.query.all()
