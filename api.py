@@ -1,15 +1,16 @@
 import os
-from tkinter import N
-from xml.dom.minidom import Attr
+import dotenv
 from flask import Flask, abort, jsonify, make_response, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-from itsdangerous import json
 load_dotenv()
-import credentials as cre
+dbname = os.getenv('DBNAME')
+password = os.getenv('PASSWORD')
+user = os.getenv('USER')
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{cre.user}:{cre.password}@localhost:5432/library"
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL'):
+app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://postgres:007fearthedread@localhost:5432/library"
+#app.config['SQLALCHEMY_DATABASE_URI'] = f"postgres//postgres://olqntmhwwxvuhn:8fa73cd02c9a125f50a41364f557844abd67cc1bc0ff51d2dfc1a32234245661@ec2-52-45-83-163.compute-1.amazonaws.com:5432/darcnl25dl09t3"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -20,9 +21,12 @@ class Category(db.Model):
     label = db.Column(db.String(100), unique=False, nullable=False)
     books = db.relationship('Book', backref='book', lazy=True)
 
-    def __init__(self, id, label):
-        self.id = id
+    def __init__(self,label):
         self.label = label
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
 
     def delete(self):
         db.session.delete(self)
@@ -47,14 +51,17 @@ class Book(db.Model):
     editor = db.Column(db.String(50), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
 
-    def __init__(self, id, isbn, title, pub_date, author, editor, category_id):
-        self.id = id
+    def __init__(self, isbn, title, pub_date, author, editor, category_id):
         self.isbn = isbn
         self.title = title
         self.pub_date = pub_date
         self.author = author
         self.editor = editor
         self.category_id = category_id
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
 
     def update(self):
         db.session.commit()
@@ -77,6 +84,36 @@ class Book(db.Model):
 db.create_all()
 
 #defining the routes
+
+#insert a book
+@app.route('/books', methods=['POST'])
+def addBook():
+    body = request.args
+    new_isbn, new_title, new_pub_date, new_author, new_editor, new_category_id = body.get('isbn',None), body.get('title',None),body.get('pub_date',None), body.get('author',None), body.get('editor',None), body.get('category_id',None)
+    values = [new_isbn, new_title, new_pub_date, new_author, new_editor, new_category_id]
+    for i in range(len(values)):
+        if values[i] is None:
+            abort(400)
+    book = Book(isbn=new_isbn,title=new_title, pub_date=new_pub_date,author=new_author,editor=new_editor,category_id=new_category_id)
+    book.insert()
+    return jsonify({
+        "Success" : True,
+        "added book" : book.format()
+    })
+#insert a category
+@app.route('/categories', methods=['POST'])
+def addCategory():
+    body = request.args
+    new_label = body.get('label', None)
+    if new_label is None:
+        abort(400)
+    else:
+        category = Category(label=new_label)
+        category.insert()
+        return jsonify({
+            "Success" : True,
+            "added category" : category.format()
+        })
 
 ##get all books
 @app.route('/books', methods=['GET'])
@@ -199,22 +236,6 @@ def updateCategory(id):
             "Success" :True,
             "updated category" : category.format()
         })
-# @app.route('/etudiants', methods=['GET'])
-# def get_all_students():
-#     etudiants = Person.query.all()
-#     formatted_students = [ et.format() for et in etudiants]
-#     return jsonify({
-#         "Success": True,
-#         "etudiants": formatted_students,
-#         "total": Person.query.count()
-#     })
-
-
-# @app.route('/getEtudiant', methhods=['GET'])
-# def get_one_student(int:id):
-#     print(":)")
-
-
 #set FLASK_APP=api.py
 #set FLASK_ENV=development
 #$env:FLASK_APP = "api.py"
