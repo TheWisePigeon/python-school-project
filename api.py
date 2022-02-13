@@ -81,13 +81,13 @@ class Book(db.Model):
             'category_id' : self.category_id
         }
 
-db.create_all()
+#db.create_all()
 
 #defining the routes
 
 #test route
-@app.route('/test', methods=['GET'])
-def everythingsOK():
+@app.route('/', methods=['GET'])
+def index():
     return jsonify({
         "Success" : True,
         "Message" : "Everything fine tho"
