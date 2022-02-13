@@ -88,10 +88,7 @@ class Book(db.Model):
 #test route
 @app.route('/', methods=['GET'])
 def index():
-    return jsonify({
-        "Success" : True,
-        "Message" : "Welcome to the 69LibAPI :)"
-    })
+    return redirect("https://github.com/TheWisePigeon")
 
 
 #insert a book
