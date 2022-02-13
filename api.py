@@ -249,3 +249,34 @@ def updateCategory(id):
 #set FLASK_ENV=development
 #$env:FLASK_APP = "api.py"
 #flask run
+
+##error handlers
+@app.errorhandler(400)
+def badRequest(error):
+    return make_response(
+        jsonify({
+        "Success" : False,
+        "Error" : 400,
+        "Message" : "The server couldn't respond because you made a bad request!"
+    }),400
+    )
+
+@app.errorhandler(404)
+def notFound(error):
+    return make_response(
+        jsonify({
+            "Success" : False,
+            "Error" : 404,
+            "Message" : "The ressource you requested was not found!"
+        })
+    )
+
+@app.errorhandler(500)
+def serverError(error):
+    return make_response(
+        jsonify({
+            "Success" : False,
+            "Error" : 500,
+            "Message" : "Oops, we might have a problem on our server :("
+        })
+    )
