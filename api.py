@@ -1,5 +1,6 @@
 import os
 from tkinter import N
+from xml.dom.minidom import Attr
 from flask import Flask, abort, jsonify, make_response, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
@@ -78,16 +79,17 @@ db.create_all()
 #defining the routes
 
 ##get all books
-@app.route('/getBooks', methods=['GET'])
+@app.route('/books', methods=['GET'])
 def getBooks():
     books = [book.format() for book in Book.query.all()]
     return jsonify({
         "Success" : True,
-        "books" : books
+        "books" : books,
+        "total" : len(books)
     })
 
 ##get a book by its id
-@app.route('/getBook/<int:id>', methods=['GET'])
+@app.route('/books/<int:id>', methods=['GET'])
 def getBook(id):
     book = (Book.query.get(id)).format()
     if book is None:
@@ -100,7 +102,7 @@ def getBook(id):
         })
 
 ##get all books from a category
-@app.route('/getBooksFromCat/<int:id>', methods=['GET'])
+@app.route('/category/<int:id>/books', methods=['GET'])
 def getBooksFromCat(id):
     books = [book.format() for book in Book.query.filter_by(category_id=id)]
     if books is None:
@@ -109,14 +111,15 @@ def getBooksFromCat(id):
         return jsonify({
             "Success" : True,
             "books" : books,
-            "category label" : (Category.query.get(id)).format()["label"]
+            "category label" : (Category.query.get(id)).format()["label"],
+            "total" : len(books)
         })
 
 ##list a category
 
 
 ##get a category by its id
-@app.route('/getCategory/<int:id>', methods=['GET'])
+@app.route('/category/<int:id>', methods=['GET'])
 def getCategory(id):
     category = (Category.query.get(id)).format()
     if category is None:
@@ -127,7 +130,75 @@ def getCategory(id):
             "category" : category
         })
 
+##get all categories
+@app.route('/categories', methods=['GET'])
+def getCategories():
+    categories = [category.format() for category in Category.query.all()]
+    return jsonify({
+        "Success" : True,
+        "categories" : categories,
+        "total" : len(categories)
+    })
 
+##delete a book
+@app.route('/books/<int:id>', methods=['DELETE'])
+def deleteBook(id):
+    book = Book.query.get(id)
+    if book is None:
+        abort(404)
+    else:
+        book.delete()
+        return jsonify({
+            "Success" : True,
+            "deleted book" : book.format()
+        })
+
+
+##delete a category
+@app.route('/categories/<int:id>', methods=['DELETE'])
+def deleteCategory(id):
+    category = Category.query.get(id)
+    if category is None:
+        abort(404)
+    else:
+        category.delete()
+        return jsonify({
+            "Success" : True,
+            "deleted book" : category.format(),
+            
+        })
+
+##update a book's infos
+@app.route('/books/<int:id>', methods=['PATCH'])
+def updateBook(id):
+    body=request.args
+    book = Book.query.get(id)
+    book.isbn, book.title, book.pub_date, book.author, book.editor, book.category_id = body.get('isbn', None), body.get('title', None), body.get('pub_date', None), body.get('author', None), body.get('editor', None), body.get('category_id', None)
+    values = [book.isbn, book.title, book.pub_date, book.author, book.editor, book.category_id]
+    for i in range(len(values)):
+        if values[i] is None:
+            abort(400)
+    book.update()
+    return jsonify({
+        "success" : True,
+        "updated book" : book.format()
+    })
+
+##update a category
+@app.route('/categories/<int:id>', methods=['PUT'])
+def updateCategory(id):
+    body=request.args
+    print(body)
+    category = Category.query.get(id)
+    category.label = body.get('label', None)
+    if category.label is None:
+        abort(400)
+    else:
+        category.update()
+        return jsonify({
+            "Success" :True,
+            "updated category" : category.format()
+        })
 # @app.route('/etudiants', methods=['GET'])
 # def get_all_students():
 #     etudiants = Person.query.all()
