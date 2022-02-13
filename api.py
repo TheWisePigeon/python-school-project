@@ -1,4 +1,3 @@
-
 from os import name
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -10,48 +9,48 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-class Person(db.Model):
-    __tablename__ = 'test'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), nullable=False)
+# class Person(db.Model):
+#     __tablename__ = 'test'
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(), nullable=False)
 
-    def __init__(self, nom):
-        self.name = name
+#     def __init__(self, nom):
+#         self.name = name
 
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
+#     def insert(self):
+#         db.session.add(self)
+#         db.session.commit()
     
-    def update(self):
-        db.session.commit()
+#     def update(self):
+#         db.session.commit()
 
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+#     def delete(self):
+#         db.session.delete(self)
+#         db.session.commit()
 
-    def format(self):
-        return {
-            "id": self.id,
-            "name" : self.name
-        }
+#     def format(self):
+#         return {
+#             "id": self.id,
+#             "name" : self.name
+#         }
 
-db.create_all()
-
-
-@app.route('/etudiants', methods=['GET'])
-def get_all_students():
-    etudiants = Person.query.all()
-    formatted_students = [ et.format() for et in etudiants]
-    return jsonify({
-        "Success": True,
-        "etudiants": formatted_students,
-        "total": Person.query.count()
-    })
+# db.create_all()
 
 
-@app.route('/getEtudiant', methhods=['GET'])
-def get_one_student(int:id):
-    print(":)")
+# @app.route('/etudiants', methods=['GET'])
+# def get_all_students():
+#     etudiants = Person.query.all()
+#     formatted_students = [ et.format() for et in etudiants]
+#     return jsonify({
+#         "Success": True,
+#         "etudiants": formatted_students,
+#         "total": Person.query.count()
+#     })
+
+
+# @app.route('/getEtudiant', methhods=['GET'])
+# def get_one_student(int:id):
+#     print(":)")
 
 
 #set FLASK_APP=api.py
