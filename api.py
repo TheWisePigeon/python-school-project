@@ -1,4 +1,5 @@
 import os
+from tkinter import N
 from flask import Flask, abort, jsonify, make_response, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
@@ -110,6 +111,23 @@ def getBooksFromCat(id):
             "books" : books,
             "category label" : (Category.query.get(id)).format()["label"]
         })
+
+##list a category
+
+
+##get a category by its id
+@app.route('/getCategory/<int:id>', methods=['GET'])
+def getCategory(id):
+    category = (Category.query.get(id)).format()
+    if category is None:
+        abort(404)
+    else:
+        return jsonify({
+            "Success" : True,
+            "category" : category
+        })
+
+
 # @app.route('/etudiants', methods=['GET'])
 # def get_all_students():
 #     etudiants = Person.query.all()
@@ -130,8 +148,3 @@ def getBooksFromCat(id):
 #set FLASK_ENV=development
 #$env:FLASK_APP = "api.py"
 #flask run
-
-
-
-
-    
