@@ -7,10 +7,10 @@ load_dotenv()
 dbname = os.getenv('DBNAME')
 password = os.getenv('PASSWORD')
 user = os.getenv('USER')
+url = os.getenv('URL')
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL'):
-app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://postgres:007fearthedread@localhost:5432/library"
-#app.config['SQLALCHEMY_DATABASE_URI'] = f"postgres//postgres://olqntmhwwxvuhn:8fa73cd02c9a125f50a41364f557844abd67cc1bc0ff51d2dfc1a32234245661@ec2-52-45-83-163.compute-1.amazonaws.com:5432/darcnl25dl09t3"
+app.config['SQLALCHEMY_DATABASE_URI'] = url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -84,6 +84,15 @@ class Book(db.Model):
 db.create_all()
 
 #defining the routes
+
+#test route
+@app.route('/test', methods=['GET'])
+def everythingsOK():
+    return jsonify({
+        "Success" : True,
+        "Message" : "Everything fine tho"
+    })
+
 
 #insert a book
 @app.route('/books', methods=['POST'])
