@@ -90,7 +90,7 @@ class Book(db.Model):
 def index():
     return jsonify({
         "Success" : True,
-        "Message" : "Everything fine tho"
+        "Message" : "Welcome to the 69LibAPI :)"
     })
 
 
