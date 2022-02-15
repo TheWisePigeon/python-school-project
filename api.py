@@ -231,7 +231,6 @@ def updateBook(id):
 @app.route('/categories/<int:id>', methods=['PATCH', 'PUT'])
 def updateCategory(id):
     body=request.args
-    print(body)
     category = Category.query.get(id)
     category.label = body.get('label', None)
     if category.label is None:
@@ -285,6 +284,7 @@ def serverError(error):
         jsonify({
             "Success" : False,
             "Error" : 500,
-            "Message" : "Oops, we might have a problem on our server :("
+            "Message" : "Oops, we might have a problem on our server :(",
+            "error" : error
         })
     )
