@@ -169,4 +169,4 @@ Please make sure to update tests as appropriate.
 
 ## Made with ♥ by [TheWisePigeon](https://github.com/TheWisePigeon)
 
-## Check this [app](https://github.com/TheWisePigeon) I made as client for the 69LibAPI :)
+## Check this [app](https://github.com/TheWisePigeon/library_69_client) I made as client for the 69LibAPI :)
