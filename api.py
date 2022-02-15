@@ -207,7 +207,7 @@ def deleteCategory(id):
         category.delete()
         return jsonify({
             "Success" : True,
-            "deleted book" : category.format(),
+            "deleted category" : category.format(),
             
         })
 
