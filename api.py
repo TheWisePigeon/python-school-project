@@ -236,7 +236,7 @@ def updateCategory(id):
     if category.label is None:
         abort(400)
     else:
-        category.update()
+        category.updateLabel()
         return jsonify({
             "Success" :True,
             "updated category" : category.format()
