@@ -81,11 +81,10 @@ class Book(db.Model):
             'category_id' : self.category_id
         }
 
-#db.create_all()
 
 #defining the routes
 
-#test route
+#root route
 @app.route('/', methods=['GET'])
 def index():
     return redirect("https://github.com/TheWisePigeon/python-school-project#readme")
